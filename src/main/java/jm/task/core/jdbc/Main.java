@@ -3,6 +3,8 @@ import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.service.UserService;
 import jm.task.core.jdbc.service.UserServiceImpl;
 import java.util.ArrayList;
+import jm.task.core.jdbc.util.Util;
+
 
 
 public class Main {
@@ -34,9 +36,18 @@ public class Main {
             userService.saveUser(user.get(i).getName(), user.get(i).getLastName(), user.get(i).getAge());
         }
 
+        userService.removeUserById(4);
         userService.cleanUsersTable();
-
         userService.dropUsersTable();
+        Util.closeConnection();
     }
 }
+
+
+
+
+
+
+
+
 
