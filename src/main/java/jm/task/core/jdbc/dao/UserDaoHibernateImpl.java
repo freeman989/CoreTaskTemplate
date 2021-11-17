@@ -106,7 +106,7 @@ public class UserDaoHibernateImpl implements UserDao {
         Transaction transaction = null;
         try {
             transaction = session.beginTransaction();
-            list = session.createCriteria(User.class).list();
+            list = session.createQuery("from User").list();
             transaction.commit();
         } catch (Exception e) {
             e.printStackTrace();
@@ -126,8 +126,7 @@ public class UserDaoHibernateImpl implements UserDao {
         Transaction transaction = null;
         try {
             transaction = session.beginTransaction();
-            final List<User> instances = session.createCriteria(User.class).list();
-
+            final List<User> instances = session.createQuery("from User").list();
             for (Object o : instances) {
                 session.delete(o);
             }

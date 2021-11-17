@@ -10,6 +10,7 @@ public class Util {
     private static final String HOST = "jdbc:mysql://localhost:3306/test";
     private static final String LOGIN = "root";
     private static final String PASSWORD = "NoVeMbEr2021";
+    private static final String DIALECT = "org.hibernate.dialect.MySQLDialect";
     private static SessionFactory sessionFactory = null;
 
     public static SessionFactory getConnection() {
@@ -20,7 +21,7 @@ public class Util {
                     .setProperty("hibernate.connection.url", HOST)
                     .setProperty("hibernate.connection.username", LOGIN)
                     .setProperty("hibernate.connection.password", PASSWORD)
-                    .setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect")
+                    .setProperty("hibernate.dialect", DIALECT)
                     .addAnnotatedClass(User.class);
 
             ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
