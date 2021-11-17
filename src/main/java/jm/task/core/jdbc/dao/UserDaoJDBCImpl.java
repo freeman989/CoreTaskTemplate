@@ -1,6 +1,9 @@
 package jm.task.core.jdbc.dao;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,25 +13,37 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public UserDaoJDBCImpl() {
     }
-
     public void createUsersTable() {
         try (Statement state = connect.createStatement()) {
-            state.executeUpdate("CREATE TABLE IF NOT EXISTS test.users" +
-                    "(id mediumint not null auto_increment," +
-                    " name VARCHAR(50), " +
-                    "lastname VARCHAR(50), " +
-                    "age tinyint, " +
-                    "PRIMARY KEY (id))");
-            System.out.println("Таблица успешно создана");
+            try {
+                connect.setAutoCommit(false);
+                state.executeUpdate("CREATE TABLE IF NOT EXISTS test.users" +
+                        "(id mediumint not null auto_increment," +
+                        " name VARCHAR(50), " +
+                        "lastname VARCHAR(50), " +
+                        "age tinyint, " +
+                        "PRIMARY KEY (id))");
+                System.out.println("Таблица успешно создана");
+                connect.commit();
+            }catch (Exception e){
+                connect.rollback();
+                e.printStackTrace();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-
     public void dropUsersTable() {
         try (Statement state = connect.createStatement()) {
-            state.executeUpdate("Drop table if exists mybasetest.users");
-            System.out.println("Таблица успешно удалена");
+            try{
+                connect.setAutoCommit(false);
+                state.executeUpdate("Drop table if exists mybasetest.users");
+                System.out.println("Таблица успешно удалена");
+                connect.commit();
+            }catch (Exception e){
+                connect.rollback();
+                e.printStackTrace();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -37,11 +52,18 @@ public class UserDaoJDBCImpl implements UserDao {
     public void saveUser(String name, String lastName, byte age) {
         try (PreparedStatement prepareState = connect.prepareStatement(
                 "INSERT INTO test.users(name, lastname, age) VALUES(?,?,?)")) {
-            prepareState.setString(1, name);
-            prepareState.setString(2, lastName);
-            prepareState.setByte(3, age);
-            prepareState.executeUpdate();
-            System.out.println("User с именем – " + name + " успешно добавлен в таблицу");
+            try{
+                connect.setAutoCommit(false);
+                prepareState.setString(1, name);
+                prepareState.setString(2, lastName);
+                prepareState.setByte(3, age);
+                prepareState.executeUpdate();
+                System.out.println("User с именем – " + name + " успешно добавлен в таблицу");
+                connect.commit();
+            }catch (Exception e){
+                connect.rollback();
+                e.printStackTrace();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -49,8 +71,15 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void removeUserById(long id) {
         try (Statement state = connect.createStatement()) {
-            state.executeUpdate("DELETE FROM test.users where id");
-            System.out.println("User успешно удален из таблицы");
+            try{
+                connect.setAutoCommit(false);
+                state.executeUpdate("DELETE FROM test.users where id");
+                System.out.println("User успешно удален из таблицы");
+                connect.commit();
+            }catch (Exception e){
+                connect.rollback();
+                e.printStackTrace();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -63,14 +92,20 @@ public class UserDaoJDBCImpl implements UserDao {
             ResultSet resultSet = state.executeQuery("SELECT id, name, lastName, age from test.users");
 
             while (resultSet.next()) {
-                User user = new User();
-                user.setId(resultSet.getLong("id"));
-                user.setName(resultSet.getString("name"));
-                user.setLastName(resultSet.getString("lastName"));
-                user.setAge(resultSet.getByte("age"));
-                users.add(user);
+                try{
+                    connect.setAutoCommit(false);
+                    User user = new User();
+                    user.setId(resultSet.getLong("id"));
+                    user.setName(resultSet.getString("name"));
+                    user.setLastName(resultSet.getString("lastName"));
+                    user.setAge(resultSet.getByte("age"));
+                    users.add(user);
+                    connect.commit();
+                }catch (Exception e){
+                    connect.rollback();
+                    e.printStackTrace();
+                }
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -79,8 +114,15 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void cleanUsersTable() {
         try (Statement state = connect.createStatement()) {
-            state.executeUpdate("DELETE FROM test.users");
-            System.out.println("Таблица успешно очищена");
+            try{
+                connect.setAutoCommit(false);
+                state.executeUpdate("DELETE FROM test.users");
+                System.out.println("Таблица успешно очищена");
+                connect.commit();
+            }catch (Exception e){
+                connect.rollback();
+                e.printStackTrace();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Не получилось очистить таблицу");
